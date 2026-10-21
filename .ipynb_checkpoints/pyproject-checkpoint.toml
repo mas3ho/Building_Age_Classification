@@ -1,0 +1,19 @@
+[project]
+name = "classifier"
+version = "1"
+description = "A requirements file tracker for dependancies"
+authors = [
+    {name = "Maseho Maureen Chipoya"}
+]
+license = "1"
+requires-python = ">=3.12"
+dependencies = [
+    "pandas (>=3.0.6,<4.0.0)",
+    "numpy (>=2.5.4,<3.0.0)",
+    "scikit-learn (>=1.9.1,<2.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
