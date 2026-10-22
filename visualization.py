@@ -162,6 +162,51 @@ def plot_prototype_results(results, zero_shot_f1, madrid_f1):
     plt.show()
 
 
+def plot_few_shot_budget_results(
+    results,
+    feature_set,
+    method,
+    output_path=None,
+):
+    """Plot Amsterdam macro-F1 against log2 label budget with error bars."""
+    selected = results[
+        (results["feature_set"] == feature_set)
+        & (results["method"] == method)
+    ].sort_values("samples_per_class")
+    if selected.empty:
+        raise ValueError(
+            f"No few-shot results for feature set {feature_set!r} "
+            f"and method {method!r}"
+        )
+
+    budgets = selected["samples_per_class"].to_numpy()
+    means = selected["mean_macro_f1"].to_numpy()
+    standard_deviations = selected["std_macro_f1"].to_numpy()
+    figure, axis = plt.subplots(figsize=(8, 5))
+    axis.errorbar(
+        np.log2(budgets),
+        means,
+        yerr=standard_deviations,
+        fmt="o-",
+        capsize=4,
+        color="#2c7fb8",
+        label=f"{feature_set} / {method}",
+    )
+    axis.set_xticks(np.log2(budgets), [str(budget) for budget in budgets])
+    axis.set_xlabel("Labelled Amsterdam samples per class (log2 scale)")
+    axis.set_ylabel("Macro F1")
+    axis.set_title("Amsterdam few-shot transfer")
+    axis.set_ylim(0, 1)
+    axis.grid(alpha=0.25)
+    axis.legend()
+    figure.tight_layout()
+
+    if output_path is not None:
+        figure.savefig(output_path, dpi=150)
+        plt.close(figure)
+    return figure, axis
+
+
 def make_pixel_grid(pixel_ids, values, fill_value):
     px = pixel_ids[:, 0].astype(int)
     py = pixel_ids[:, 1].astype(int)

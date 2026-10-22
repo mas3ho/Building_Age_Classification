@@ -49,7 +49,10 @@ This compares baseline, spectral, temporal, and full feature sets across
 5, 25, 50, 100, and 200 labelled Amsterdam pixels per class using the same
 folds and support-selection seeds for Random Forest, logistic regression, and
 prototype classification. Results are written to
-`artifacts/few_shot_evaluation.csv`.
+`artifacts/few_shot_evaluation.csv`. The default final plot uses the full
+feature set and Random Forest and is written to
+`artifacts/few_shot_f1_vs_log2_budget.png`. Choose another comparison for the
+plot with `--feature-set` and `--method`.
 
 ## Memory profiling
 

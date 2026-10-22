@@ -5,6 +5,7 @@ from model_training import (
     prototype_predict,
     prototype_predict_proba,
 )
+from visualization import plot_few_shot_budget_results
 
 
 def test_prototype_predict_returns_nearest_class_for_each_query():
@@ -54,3 +55,28 @@ def test_cross_validate_few_shot_uses_requested_budgets_and_scores():
     assert results[0]["samples_per_class"] == 2
     assert len(results[0]["scores"]) == 2
     assert 0.0 <= results[0]["mean_macro_f1"] <= 1.0
+
+
+def test_few_shot_plot_writes_log2_budget_figure(tmp_path):
+    import pandas as pd
+
+    results = pd.DataFrame(
+        {
+            "feature_set": ["full", "full"],
+            "method": ["random_forest", "random_forest"],
+            "samples_per_class": [5, 25],
+            "mean_macro_f1": [0.5, 0.6],
+            "std_macro_f1": [0.02, 0.01],
+        }
+    )
+    output = tmp_path / "few_shot.png"
+
+    plot_few_shot_budget_results(
+        results,
+        "full",
+        "random_forest",
+        output,
+    )
+
+    assert output.exists()
+    assert output.stat().st_size > 0
