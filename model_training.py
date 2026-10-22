@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import f1_score
 from sklearn.model_selection import RepeatedStratifiedKFold
 
@@ -121,4 +122,101 @@ def run_prototype_trials(
             results[shots].append(
                 f1_score(y[query], prediction, average="macro", zero_division=0)
             )
+    return results
+
+
+def cross_validate_few_shot(
+    X,
+    y,
+    feature_sets,
+    methods=("random_forest", "logistic_regression", "prototype"),
+    budgets=(5, 25, 50, 100, 200),
+    cv_config=None,
+    model_params=None,
+    seed=42,
+):
+    """Evaluate few-shot Amsterdam support selection without validation leakage."""
+    cv_config = cv_config or {"folds": 5, "repeats": 3}
+    folds = cv_config["folds"]
+    repeats = cv_config["repeats"]
+    params = model_params or {
+        "n_estimators": 500,
+        "class_weight": "balanced",
+        "random_state": seed,
+        "n_jobs": -1,
+    }
+    splitter = RepeatedStratifiedKFold(
+        n_splits=folds,
+        n_repeats=repeats,
+        random_state=seed,
+    )
+    classes = np.unique(y)
+    results = []
+
+    for feature_name, feature_indices in feature_sets.items():
+        feature_indices = np.asarray(feature_indices)
+        for method in methods:
+            for budget in budgets:
+                scores = []
+                for split_index, (train_idx, valid_idx) in enumerate(
+                    splitter.split(X, y)
+                ):
+                    rng = np.random.default_rng(seed + split_index * 1000 + budget)
+                    support_idx = []
+                    for cls in classes:
+                        class_train_idx = train_idx[y[train_idx] == cls]
+                        if len(class_train_idx) < budget:
+                            raise ValueError(
+                                f"Budget {budget} exceeds class {cls} training "
+                                f"count ({len(class_train_idx)})"
+                            )
+                        support_idx.extend(
+                            rng.choice(class_train_idx, budget, replace=False)
+                        )
+                    support_idx = np.asarray(support_idx)
+                    X_support = X[support_idx][:, feature_indices]
+                    X_valid = X[valid_idx][:, feature_indices]
+                    y_support = y[support_idx]
+
+                    if method == "random_forest":
+                        model = RandomForestClassifier(**params)
+                        model.fit(X_support, y_support)
+                        predictions = model.predict(X_valid)
+                    elif method == "logistic_regression":
+                        model = LogisticRegression(
+                            max_iter=1000,
+                            class_weight="balanced",
+                            random_state=seed,
+                        )
+                        model.fit(X_support, y_support)
+                        predictions = model.predict(X_valid)
+                    elif method == "prototype":
+                        predictions = prototype_predict(
+                            X_support,
+                            y_support,
+                            X_valid,
+                        )
+                    else:
+                        raise ValueError(f"Unsupported few-shot method: {method}")
+
+                    scores.append(
+                        f1_score(
+                            y[valid_idx],
+                            predictions,
+                            average="macro",
+                            zero_division=0,
+                        )
+                    )
+
+                results.append(
+                    {
+                        "feature_set": feature_name,
+                        "method": method,
+                        "samples_per_class": budget,
+                        "mean_macro_f1": float(np.mean(scores)),
+                        "std_macro_f1": float(np.std(scores)),
+                        "scores": np.asarray(scores),
+                    }
+                )
+
     return results

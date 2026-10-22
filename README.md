@@ -39,6 +39,18 @@ python3 -m scripts.run_notebook3
 python3 -m scripts.run_notebook4
 ```
 
+To run the controlled Amsterdam few-shot comparison (5 folds x 3 repeats):
+
+```bash
+python3 -m scripts.run_few_shot_evaluation
+```
+
+This compares baseline, spectral, temporal, and full feature sets across
+5, 25, 50, 100, and 200 labelled Amsterdam pixels per class using the same
+folds and support-selection seeds for Random Forest, logistic regression, and
+prototype classification. Results are written to
+`artifacts/few_shot_evaluation.csv`.
+
 ## Memory profiling
 
 Use the repository helper so Memray output does not accumulate in the project
