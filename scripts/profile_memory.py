@@ -1,0 +1,102 @@
+"""Run a project workflow under Memray and store all reports in one directory."""
+
+import argparse
+import subprocess
+import sys
+from pathlib import Path
+
+
+WORKFLOWS = ("notebook2", "notebook3", "notebook4", "notebooks")
+
+
+def run_command(command: list[str]) -> None:
+    print("$", " ".join(command))
+    subprocess.run(command, check=True)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Profile a project workflow and generate Memray reports."
+    )
+    parser.add_argument("workflow", choices=WORKFLOWS)
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=Path("memory_profiles"),
+        help="Directory for Memray reports.",
+    )
+    parser.add_argument(
+        "--label",
+        help="Report name; defaults to the workflow name.",
+    )
+    args = parser.parse_args()
+
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    label = args.label or args.workflow
+    binary = args.output_dir / f"{label}.bin"
+    stats = args.output_dir / f"{label}_stats.txt"
+    tree = args.output_dir / f"{label}_tree.txt"
+    flamegraph = args.output_dir / f"{label}.html"
+
+    if args.workflow == "notebooks":
+        workflow_command = [
+            sys.executable,
+            "-m",
+            "scripts.run_notebooks",
+        ]
+    else:
+        workflow_command = [
+            sys.executable,
+            "-m",
+            f"scripts.run_{args.workflow}",
+        ]
+
+    run_command(
+        [
+            sys.executable,
+            "-m",
+            "memray",
+            "run",
+            "-o",
+            str(binary),
+            *workflow_command,
+        ]
+    )
+    run_command(
+        [
+            sys.executable,
+            "-m",
+            "memray",
+            "stats",
+            str(binary),
+            "-o",
+            str(stats),
+        ]
+    )
+    run_command(
+        [
+            sys.executable,
+            "-m",
+            "memray",
+            "tree",
+            str(binary),
+            "-o",
+            str(tree),
+        ]
+    )
+    run_command(
+        [
+            sys.executable,
+            "-m",
+            "memray",
+            "flamegraph",
+            str(binary),
+            "-o",
+            str(flamegraph),
+        ]
+    )
+    print(f"Memory reports written to {args.output_dir}")
+
+
+if __name__ == "__main__":
+    main()

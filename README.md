@@ -1,0 +1,59 @@
+# Building Age Classification
+
+This project classifies building-age groups from long-term Landsat spectral
+observations for Madrid and Amsterdam. The analysis is organized as four
+notebooks:
+
+1. `1-Introduction.ipynb` explains the problem and proposed approaches.
+2. `2-Reading_Data.ipynb` loads and explores both city datasets.
+3. `3-Preprocessing.ipynb` cleans the observations, engineers features, and
+   writes `data/preprocessed/preprocessed_data.pkl`.
+4. `4-Modelling.ipynb` trains and evaluates the Random Forest and few-shot
+   prototype models using Notebook 3's output.
+
+Run commands from the repository root. The bundled data files must be valid
+Parquet files supplied by the project environment.
+
+## Running the notebooks
+
+The notebooks must be run in order because Notebook 4 consumes the artifact
+created by Notebook 3. Notebook 1 is informational but is included in the
+execution check:
+
+```powershell
+python -m scripts.run_notebooks
+```
+
+Executed copies are written to `artifacts/executed-notebooks/`, leaving the
+source notebooks unchanged. To choose another output directory:
+
+```powershell
+python -m scripts.run_notebooks --output-dir artifacts/notebook-runs
+```
+
+For faster script-based runs of the same implemented workflows:
+
+```powershell
+python -m scripts.run_notebook2
+python -m scripts.run_notebook3
+python -m scripts.run_notebook4
+```
+
+## Memory profiling
+
+Use the repository helper so Memray output does not accumulate in the project
+root:
+
+```powershell
+python -m scripts.profile_memory notebooks
+python -m scripts.profile_memory notebook3 --label notebook3
+```
+
+Reports are written to `memory_profiles/` and ignored by Git. You can choose a
+different directory with `--output-dir`.
+
+## Tests
+
+```powershell
+python -m pytest -q
+```
