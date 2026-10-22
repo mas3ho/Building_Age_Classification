@@ -20,23 +20,23 @@ The notebooks must be run in order because Notebook 4 consumes the artifact
 created by Notebook 3. Notebook 1 is informational but is included in the
 execution check:
 
-```powershell
-python -m scripts.run_notebooks
+```bash
+python3 -m scripts.run_notebooks
 ```
 
 Executed copies are written to `artifacts/executed-notebooks/`, leaving the
 source notebooks unchanged. To choose another output directory:
 
-```powershell
-python -m scripts.run_notebooks --output-dir artifacts/notebook-runs
+```bash
+python3 -m scripts.run_notebooks --output-dir artifacts/notebook-runs
 ```
 
 For faster script-based runs of the same implemented workflows:
 
-```powershell
-python -m scripts.run_notebook2
-python -m scripts.run_notebook3
-python -m scripts.run_notebook4
+```bash
+python3 -m scripts.run_notebook2
+python3 -m scripts.run_notebook3
+python3 -m scripts.run_notebook4
 ```
 
 ## Memory profiling
@@ -44,9 +44,9 @@ python -m scripts.run_notebook4
 Use the repository helper so Memray output does not accumulate in the project
 root:
 
-```powershell
-python -m scripts.profile_memory notebooks
-python -m scripts.profile_memory notebook3 --label notebook3
+```bash
+python3 -m scripts.profile_memory notebooks
+python3 -m scripts.profile_memory notebook3 --label notebook3
 ```
 
 Reports are written to `memory_profiles/` and ignored by Git. You can choose a
@@ -54,6 +54,6 @@ different directory with `--output-dir`.
 
 ## Tests
 
-```powershell
-python -m pytest -q
+```bash
+python3 -m pytest -q
 ```
