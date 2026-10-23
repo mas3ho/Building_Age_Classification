@@ -42,17 +42,9 @@ def main() -> None:
     flamegraph = args.output_dir / f"{label}.html"
 
     if args.workflow == "notebooks":
-        workflow_command = [
-            sys.executable,
-            "-m",
-            "scripts.run_notebooks",
-        ]
+        workflow_module = "scripts.run_notebooks"
     else:
-        workflow_command = [
-            sys.executable,
-            "-m",
-            f"scripts.run_{args.workflow}",
-        ]
+        workflow_module = f"scripts.run_{args.workflow}"
 
     run_command(
         [
@@ -62,7 +54,8 @@ def main() -> None:
             "run",
             "-o",
             str(binary),
-            *workflow_command,
+            "-m",
+            workflow_module,
         ]
     )
     run_command(
