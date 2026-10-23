@@ -1,9 +1,9 @@
-<<<<<<< HEAD
 # Building Age Classification
 
 ## Project overview
 
 CHECK OUT track.md FOR A DETAILED REPORT ON HOW THE MODEL EVOLVED OVER TIME
+=======
 
 This project classifies building-age groups from long-term multispectral satellite observations. It uses annual pixel-level Landsat data from Madrid and Amsterdam to:
 
@@ -22,8 +22,6 @@ The original analysis is documented in four notebooks:
 4. `4-Modelling.ipynb` — modelling and evaluation
 
 The notebooks remain available as explanatory references. The executable workflows are now represented by scripts and reusable modules.
-
-## Project structure
 
 ## Project structure
 
