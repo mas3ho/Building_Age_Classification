@@ -13,7 +13,7 @@ from model_training import (
     train_random_forest,
 )
 from preprocessing_io import load_preprocessed_data
-from utils import CLASS_LABELS
+from utils import CLASS_LABELS, REPO_ROOT
 from visualization import (
     plot_confusion_matrix,
     plot_cross_validation_results,
@@ -33,7 +33,7 @@ CLASS_LABELS = {
 
 def main():
     data = load_preprocessed_data(
-        Path("data") / "preprocessed" / "preprocessed_data.pkl"
+        REPO_ROOT / "data" / "preprocessed" / "preprocessed_data.pkl"
     )
     X_madrid, y_madrid = data["X_madrid"], data["y_madrid"]
     X_amsterdam, y_amsterdam = data["X_amsterdam"], data["y_amsterdam"]

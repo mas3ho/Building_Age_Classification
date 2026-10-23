@@ -8,6 +8,7 @@ import pandas as pd
 
 from model_training import cross_validate_few_shot
 from preprocessing_io import load_preprocessed_data
+from utils import REPO_ROOT
 from visualization import plot_few_shot_budget_results
 
 
@@ -40,17 +41,17 @@ def main():
     parser.add_argument(
         "--input",
         type=Path,
-        default=Path("data") / "preprocessed" / "preprocessed_data.pkl",
+        default=REPO_ROOT / "data" / "preprocessed" / "preprocessed_data.pkl",
     )
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("artifacts") / "few_shot_evaluation.csv",
+        default=REPO_ROOT / "artifacts" / "few_shot_evaluation.csv",
     )
     parser.add_argument(
         "--plot-output",
         type=Path,
-        default=Path("artifacts") / "few_shot_f1_vs_log2_budget.png",
+        default=REPO_ROOT / "artifacts" / "few_shot_f1_vs_log2_budget.png",
     )
     parser.add_argument(
         "--feature-set",
@@ -67,6 +68,10 @@ def main():
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--n-estimators", type=int, default=500)
     args = parser.parse_args()
+    for attribute in ("input", "output", "plot_output"):
+        path = getattr(args, attribute)
+        if not path.is_absolute():
+            setattr(args, attribute, REPO_ROOT / path)
 
     data = load_preprocessed_data(args.input)
     feature_sets = build_feature_sets(data["feature_names"], data["feat_groups"])

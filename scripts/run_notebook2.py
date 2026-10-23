@@ -22,7 +22,7 @@ from visualization import (
 
 def main():
     plt.rcParams["figure.dpi"] = 100
-    madrid_path, amsterdam_path = default_data_paths(Path("data"))
+    madrid_path, amsterdam_path = default_data_paths()
     madrid = load_city_data(madrid_path)
     amsterdam = load_city_data(amsterdam_path)
     madrid_flat = make_flat_view(madrid)

@@ -1,6 +1,15 @@
 from pathlib import Path
 
 
+REPO_ROOT = Path(__file__).resolve().parent
+
+
+def resolve_repo_path(path: Path | str) -> Path:
+    """Resolve relative project paths from the repository root."""
+    path = Path(path)
+    return path if path.is_absolute() else REPO_ROOT / path
+
+
 BASE_BANDS = ["Blue", "Green", "Red", "NIR", "SWIR1", "SWIR2"]
 BLUE_MAX = 15_000
 CLASS_EVENTS = {"Amsterdam": 1945, "Madrid": 1960}
@@ -27,7 +36,7 @@ CLASS_LABELS = {
 
 
 def default_data_paths(data_dir: Path | str = "data") -> tuple[Path, Path]:
-    data_dir = Path(data_dir)
+    data_dir = resolve_repo_path(data_dir)
     return data_dir / "madrid_train.parquet", data_dir / "amsterdam_data.parquet"
 
 

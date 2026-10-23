@@ -60,3 +60,15 @@
 - Latest test result: `10 passed`.
 - Plot generation was smoke-tested successfully and produced both CSV and PNG
   artifacts.
+
+### Repository-root path hardening
+
+- Added repository-root path resolution based on the source file location.
+- Anchored default data, preprocessing, evaluation CSV, plot, notebook-copy,
+  and Memray output paths to the repository root instead of the caller's
+  current directory.
+- Configured notebook execution and Memray subprocesses to run with the
+  repository root as their working directory.
+- Added a path-anchoring test and verified the behavior from outside the
+  repository working directory.
+- Latest test result after hardening: `11 passed`.
