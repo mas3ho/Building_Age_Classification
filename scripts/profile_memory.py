@@ -1,4 +1,4 @@
-"""Run a project workflow under Memray and store all reports in one directory."""
+"""Run a project workflow under Memray and store reports in one directory."""
 
 import argparse
 import subprocess
@@ -31,10 +31,12 @@ def main() -> None:
         help="Report name; defaults to the workflow name.",
     )
     args = parser.parse_args()
+
     if not args.output_dir.is_absolute():
         args.output_dir = REPO_ROOT / args.output_dir
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
+
     label = args.label or args.workflow
     binary = args.output_dir / f"{label}.bin"
     stats = args.output_dir / f"{label}_stats.txt"
@@ -42,17 +44,9 @@ def main() -> None:
     flamegraph = args.output_dir / f"{label}.html"
 
     if args.workflow == "notebooks":
-        workflow_command = [
-            sys.executable,
-            "-m",
-            "scripts.run_notebooks",
-        ]
+        workflow_module = "scripts.run_notebooks"
     else:
-        workflow_command = [
-            sys.executable,
-            "-m",
-            f"scripts.run_{args.workflow}",
-        ]
+        workflow_module = f"scripts.run_{args.workflow}"
 
     run_command(
         [
@@ -62,9 +56,11 @@ def main() -> None:
             "run",
             "-o",
             str(binary),
-            *workflow_command,
+            "-m",
+            workflow_module,
         ]
     )
+
     run_command(
         [
             sys.executable,
@@ -76,6 +72,7 @@ def main() -> None:
             str(stats),
         ]
     )
+
     run_command(
         [
             sys.executable,
@@ -87,6 +84,7 @@ def main() -> None:
             str(tree),
         ]
     )
+
     run_command(
         [
             sys.executable,
@@ -98,6 +96,7 @@ def main() -> None:
             str(flamegraph),
         ]
     )
+
     print(f"Memory reports written to {args.output_dir}")
 
 
