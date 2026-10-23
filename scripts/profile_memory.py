@@ -6,12 +6,13 @@ import sys
 from pathlib import Path
 
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
 WORKFLOWS = ("notebook2", "notebook3", "notebook4", "notebooks")
 
 
 def run_command(command: list[str]) -> None:
     print("$", " ".join(command))
-    subprocess.run(command, check=True)
+    subprocess.run(command, check=True, cwd=REPO_ROOT)
 
 
 def main() -> None:
@@ -22,7 +23,7 @@ def main() -> None:
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=Path("memory_profiles"),
+        default=REPO_ROOT / "memory_profiles",
         help="Directory for Memray reports.",
     )
     parser.add_argument(
@@ -30,6 +31,8 @@ def main() -> None:
         help="Report name; defaults to the workflow name.",
     )
     args = parser.parse_args()
+    if not args.output_dir.is_absolute():
+        args.output_dir = REPO_ROOT / args.output_dir
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
     label = args.label or args.workflow
@@ -39,17 +42,9 @@ def main() -> None:
     flamegraph = args.output_dir / f"{label}.html"
 
     if args.workflow == "notebooks":
-        workflow_command = [
-            sys.executable,
-            "-m",
-            "scripts.run_notebooks",
-        ]
+        workflow_module = "scripts.run_notebooks"
     else:
-        workflow_command = [
-            sys.executable,
-            "-m",
-            f"scripts.run_{args.workflow}",
-        ]
+        workflow_module = f"scripts.run_{args.workflow}"
 
     run_command(
         [
@@ -59,7 +54,8 @@ def main() -> None:
             "run",
             "-o",
             str(binary),
-            *workflow_command,
+            "-m",
+            workflow_module,
         ]
     )
     run_command(
