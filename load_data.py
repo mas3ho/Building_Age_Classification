@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from utils import CLASS_EVENTS
+from utils import CLASS_EVENTS, resolve_repo_path
 
 
 def assign_age_class(
@@ -33,8 +33,9 @@ def load_city_data(path: Path | str, assign_classes: bool = True) -> pd.DataFram
 
 def load_city_datasets(data_dir: Path | str) -> dict[str, pd.DataFrame]:
     """Load and label both city datasets from one data directory."""
-    madrid_path = Path(data_dir) / "madrid_train.parquet"
-    amsterdam_path = Path(data_dir) / "amsterdam_data.parquet"
+    data_dir = resolve_repo_path(data_dir)
+    madrid_path = data_dir / "madrid_train.parquet"
+    amsterdam_path = data_dir / "amsterdam_data.parquet"
     return {
         "Madrid": load_city_data(madrid_path),
         "Amsterdam": load_city_data(amsterdam_path),

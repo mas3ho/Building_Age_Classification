@@ -11,8 +11,10 @@ notebooks:
 4. `4-Modelling.ipynb` trains and evaluates the Random Forest and few-shot
    prototype models using Notebook 3's output.
 
-Run commands from the repository root. The bundled data files must be valid
-Parquet files supplied by the project environment.
+The executable workflows resolve relative data, artifact, plot, and profiling
+paths from the repository root, so their outputs do not depend on the caller's
+current directory. The bundled data files must be valid Parquet files supplied
+by the project environment.
 
 ## Running the notebooks
 

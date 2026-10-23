@@ -13,7 +13,7 @@ from feature_engineering import (
 )
 from load_data import load_city_datasets
 from preprocessing_io import save_preprocessed_data
-from utils import CLASS_COLORS, CLASS_LABELS
+from utils import CLASS_COLORS, CLASS_LABELS, REPO_ROOT
 from visualization import plot_feature_class_distribution
 
 
@@ -59,7 +59,7 @@ def build_preprocessed_output(features, standardized, feature_groups):
 
 
 def main():
-    raw = load_city_datasets(Path("data"))
+    raw = load_city_datasets(REPO_ROOT / "data")
     features = {}
     for name, data in raw.items():
         flat = make_flat_view(data)
@@ -96,7 +96,7 @@ def main():
     output = build_preprocessed_output(features, standardized, feature_groups)
     save_path = save_preprocessed_data(
         output,
-        Path("data") / "preprocessed" / "preprocessed_data.pkl",
+        REPO_ROOT / "data" / "preprocessed" / "preprocessed_data.pkl",
     )
     print(f"Saved to: {save_path} ({save_path.stat().st_size / 1024 / 1024:.1f} MB)")
 
